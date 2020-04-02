@@ -1,0 +1,4 @@
+pandas==0.25.3
+xlrd==1.2.0
+pyarrow==0.15.1
+openpyxl==3.0.3
