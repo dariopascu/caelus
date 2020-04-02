@@ -8,7 +8,7 @@ from distutils.core import setup
 _here = Path(os.path.abspath(os.path.dirname(__file__)))
 
 version = dict()
-with (_here / 'squall' / '__init__.py').open() as f:
+with (_here / 'caelus' / '__init__.py').open() as f:
     exec(f.readline(), version)
 
 license_info = (_here / 'LICENSE').read_text()
@@ -28,8 +28,8 @@ data_packages = ['pandas==0.25.3',
                  'pyarrow==0.15.1',
                  'openpyxl==3.0.3']
 setup(
-    name='squall',
-    packages=['squall'],
+    name='caelus',
+    packages=['caelus'],
     version=version['__version__'],
     description='Multi-cloud utils package',
     author='dariopascu',
@@ -45,8 +45,8 @@ setup(
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.7'],
     extras_require={
-        'aws': aws_packages,  # pip install squall[aws]
-        'az': azure_packages,  # pip install squall[az]
-        'storage': aws_packages + azure_packages + data_packages,  # pip install squall[storage]
+        'aws': aws_packages,  # pip install caelus[aws]
+        'az': azure_packages,  # pip install caelus[az]
+        'storage': aws_packages + azure_packages + data_packages,  # pip install caelus[storage]
     }
 )

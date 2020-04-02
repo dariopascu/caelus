@@ -6,8 +6,8 @@ from contextlib import contextmanager
 import pandas as pd
 import yaml
 
-from squall.aws.auth import AWSAuth
-from squall.core.storages import Storage
+from caelus.aws.auth import AWSAuth
+from caelus.core.storages import Storage
 
 
 class S3Storage(Storage):
