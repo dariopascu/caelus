@@ -7,5 +7,7 @@ logging.basicConfig(level=logging.INFO,
                     datefmt='%d-%m-%y %H:%M:%S')
 
 __all__ = [
-    'aws'
+    'aws',
+    'az',
+    'gcp',
 ]
