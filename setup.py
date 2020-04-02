@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from setuptools import setup
+from distutils.core import setup
 
 _here = Path(os.path.abspath(os.path.dirname(__file__)))
 
