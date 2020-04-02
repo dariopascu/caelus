@@ -3,7 +3,10 @@
 import os
 from pathlib import Path
 
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
 
 _here = Path(os.path.abspath(os.path.dirname(__file__)))
 
