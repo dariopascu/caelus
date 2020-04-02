@@ -14,10 +14,11 @@ version = dict()
 with (_here / 'caelus' / '__init__.py').open() as f:
     exec(f.readline(), version)
 
-license_info = (_here / 'LICENSE').read_text()
-
 with (_here / 'requirements.txt').open() as req:
     requirements = [i.replace('\n', '') for i in req]
+
+with open(_here / 'README.md', encoding='utf-8') as f:
+    long_description = f.read()
 
 aws_packages = ['boto3==1.9.66',
                 'awscli==1.16.314', ]
@@ -35,12 +36,12 @@ setup(
     packages=['caelus'],
     version=version['__version__'],
     description='Multi-cloud utils package',
-    long_description=(_here / 'README.md').read_text(),
+    long_description=long_description,
     long_description_content_type='text/markdown',
     author='dariopascu',
     url='https://github.com/dariopascu/caelus',
     download_url='https://github.com/dariopascu/caelus/archive/v0.0.1.tar.gz',
-    license=license_info,
+    license='MIT License',
     install_requires=requirements + aws_packages + azure_packages + data_packages,
     include_package_data=True,
     python_requires='>=3.7',
