@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 
-from setuptools import setup, find_packages
+from setuptools import setup
 
 _here = Path(os.path.abspath(os.path.dirname(__file__)))
 
@@ -27,19 +27,19 @@ data_packages = ['pandas==0.25.3',
                  'xlrd==1.2.0',
                  'pyarrow==0.15.1',
                  'openpyxl==3.0.3']
-
 setup(
     name='squall',
+    packages=['squall'],
     version=version['__version__'],
     description='Multi-cloud utils package',
     author='dariopascu',
     url='https://github.com/dariopascu/squall',
-    download_url='github release tar.gz',
+    download_url='https://github.com/dariopascu/squall/archive/v0.0.1.tar.gz',
     license=license_info,
-    packages=find_packages(),
     install_requires=requirements + aws_packages + azure_packages + data_packages,
     include_package_data=True,
     python_requires='>=3.7',
+    keywords=['cloud', 'aws', 'azure', 'gcp'],
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
