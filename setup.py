@@ -35,6 +35,7 @@ setup(
     packages=['caelus'],
     version=version['__version__'],
     description='Multi-cloud utils package',
+    long_description=(_here / 'README.md').read_text(),
     author='dariopascu',
     url='https://github.com/dariopascu/squall',
     download_url='https://github.com/dariopascu/squall/archive/v0.0.1.tar.gz',
