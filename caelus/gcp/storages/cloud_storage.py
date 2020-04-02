@@ -10,8 +10,8 @@ from google.cloud.storage.blob import Blob
 
 import pandas as pd
 
-from squall.core.storages import Storage
-from squall.gcp.auth import GCPAuth
+from caelus.core.storages import Storage
+from caelus.gcp.auth import GCPAuth
 
 
 class CloudStorage(Storage):

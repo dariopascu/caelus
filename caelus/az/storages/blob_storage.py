@@ -7,8 +7,8 @@ from typing import Union, Generator
 import pandas as pd
 import yaml
 
-from squall.az.auth import AzureAuth
-from squall.core.storages import Storage
+from caelus.az.auth import AzureAuth
+from caelus.core.storages import Storage
 from azure.storage.blob import BlockBlobService
 from azure.storage.common import TokenCredential
 from azure.storage.blob.models import Blob

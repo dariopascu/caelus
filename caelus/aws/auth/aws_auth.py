@@ -2,8 +2,8 @@ import logging
 from typing import Union
 import boto3
 
-from squall.aws.users import AWSIdentity
-from squall.aws.users import AWSSecurity
+from caelus.aws.users import AWSIdentity
+from caelus.aws.users import AWSSecurity
 
 
 class AWSAuth(object):
