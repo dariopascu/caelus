@@ -32,19 +32,21 @@ setup(
     name='squall',
     version=version['__version__'],
     description='Multi-cloud utils package',
+    author='dariopascu',
     url='https://github.com/dariopascu/squall',
+    download_url='github release tar.gz',
     license=license_info,
     packages=find_packages(),
     install_requires=requirements + aws_packages + azure_packages + data_packages,
     include_package_data=True,
     python_requires='>=3.7',
     classifiers=[
-        'Development Status :: 1 - Planning',
+        'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Programming Language :: Python :: 3.7'],
     extras_require={
-        'aws': aws_packages,  # pip install cloud_utils[aws]
-        'az': azure_packages,  # pip install cloud_utils[az]
-        'storage': aws_packages + azure_packages + data_packages,  # pip install cloud_utils[storage]
+        'aws': aws_packages,  # pip install squall[aws]
+        'az': azure_packages,  # pip install squall[az]
+        'storage': aws_packages + azure_packages + data_packages,  # pip install squall[storage]
     }
 )
