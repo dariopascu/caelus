@@ -36,6 +36,7 @@ setup(
     version=version['__version__'],
     description='Multi-cloud utils package',
     long_description=(_here / 'README.md').read_text(),
+    long_description_content_type='text/markdown',
     author='dariopascu',
     url='https://github.com/dariopascu/caelus',
     download_url='https://github.com/dariopascu/caelus/archive/v0.0.1.tar.gz',
