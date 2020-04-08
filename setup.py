@@ -41,7 +41,7 @@ setup(
     url='https://github.com/dariopascu/caelus',
     download_url='https://github.com/dariopascu/caelus/archive/v0.0.1.tar.gz',
     license='MIT License',
-    install_requires=requirements + aws_packages + azure_packages + google_packages,
+    install_requires=requirements,
     include_package_data=True,
     python_requires='>=3.7',
     keywords=['cloud', 'aws', 'azure', 'gcp'],
@@ -53,5 +53,6 @@ setup(
         'aws': requirements + aws_packages,  # pip install caelus[aws]
         'az': requirements + azure_packages,  # pip install caelus[az]
         'gcp': requirements + google_packages,  # pip install caelus[gcp]
+        'all': requirements + aws_packages + azure_packages + google_packages
     }
 )
