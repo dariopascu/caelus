@@ -12,6 +12,10 @@ class Storage(ABC):
     def base_path(self) -> str:
         return self._base_path
 
+    @property.setter
+    def base_path(self, new_path):
+        self._base_path = new_path
+
     def _get_folder_path(self, folder: Union[None, str] = None) -> str:
         full_path = self.base_path
         if folder is not None:
@@ -34,6 +38,7 @@ class Storage(ABC):
                    filter_extension: Union[None, str, tuple] = None) -> Generator:
         pass
 
+    @abstractmethod
     def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
                               remove_copied: bool = False):
         pass
