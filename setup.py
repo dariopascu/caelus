@@ -20,8 +20,8 @@ with (_here / 'requirements.txt').open() as req:
 with open(_here / 'README.md', encoding='utf-8') as f:
     long_description = f.read()
 
-aws_packages = ['boto3==1.9.66',
-                'awscli==1.16.314', ]
+aws_packages = ['boto3==1.12.12',
+                'awscli==1.18.39', ]
 
 azure_packages = ['azure==4.0.0',
                   'azure-identity==1.2.0',
@@ -53,6 +53,6 @@ setup(
         'aws': requirements + aws_packages,  # pip install caelus[aws]
         'az': requirements + azure_packages,  # pip install caelus[az]
         'gcp': requirements + google_packages,  # pip install caelus[gcp]
-        'all': requirements + aws_packages + azure_packages + google_packages
+        'all': requirements + aws_packages + azure_packages + google_packages  # pip install caelus[all]
     }
 )
