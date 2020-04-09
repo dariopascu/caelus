@@ -11,10 +11,10 @@ except ImportError:
 _here = Path(os.path.abspath(os.path.dirname(__file__)))
 
 version = dict()
-with (_here / 'caelus' / '__init__.py').open() as f:
+with open(_here / 'caelus' / '__init__.py') as f:
     exec(f.readline(), version)
 
-with (_here / 'requirements.txt').open() as req:
+with open(_here / 'requirements.txt') as req:
     requirements = [i.replace('\n', '') for i in req]
 
 with open(_here / 'README.md', encoding='utf-8') as f:
@@ -30,16 +30,18 @@ azure_packages = ['azure==4.0.0',
 google_packages = ['google-api-python-client==1.8.0',
                    'google-cloud-storage==1.27.0', ]
 
+package_version = version['__version__']
+
 setup(
     name='caelus',
     packages=['caelus'],
-    version=version['__version__'],
+    version=package_version,
     description='Multi-cloud utils package',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='dariopascu',
     url='https://github.com/dariopascu/caelus',
-    download_url='https://github.com/dariopascu/caelus/archive/v0.0.1.tar.gz',
+    download_url=f'https://github.com/dariopascu/caelus/archive/v{package_version}.tar.gz',
     license='MIT License',
     install_requires=requirements,
     include_package_data=True,
