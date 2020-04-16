@@ -169,3 +169,6 @@ class CloudStorage(Storage):
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
         self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(write_object, **kwargs)
+
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
+        self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(object_filename, **kwargs)

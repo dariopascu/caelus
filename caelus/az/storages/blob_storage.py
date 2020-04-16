@@ -163,3 +163,8 @@ class BlobStorage(Storage):
         self.blob_service.create_blob_from_bytes(container_name=self.container_name,
                                                  blob_name=self._get_bucket_path(filename, folder),
                                                  blob=write_object)
+
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
+        self.blob_service.create_blob_from_path(container_name=self.container_name,
+                                                blob_name=self._get_bucket_path(filename, folder),
+                                                file_path=object_filename, **kwargs)

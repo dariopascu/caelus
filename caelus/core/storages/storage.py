@@ -12,7 +12,7 @@ class Storage(ABC):
     def base_path(self) -> str:
         return self._base_path
 
-    @property.setter
+    @base_path.setter
     def base_path(self, new_path):
         self._base_path = new_path
 
@@ -97,4 +97,8 @@ class Storage(ABC):
 
     @abstractmethod
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
+        pass
+
+    @abstractmethod
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
         pass

@@ -147,8 +147,12 @@ class S3Storage(Storage):
     def write_json(self, data: dict, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.StringIO() as buff:
             json.dump(data, buff, **kwargs)
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(buff)
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
-        self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=write_object,
-                                                                                               **kwargs)
+        self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(write_object,
+                                                                                                          **kwargs)
+
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
+        self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_file(object_filename,
+                                                                                                       **kwargs)
