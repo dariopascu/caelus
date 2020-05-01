@@ -1,3 +1,5 @@
+from boto3.s3.transfer import TransferConfig
+
 from caelus.aws.auth import AWSAuth
 from caelus.aws.storages import S3Storage
 import logging
@@ -6,7 +8,9 @@ if __name__ == '__main__':
     aws_logger = logging.getLogger('aws')
     aws_logger.setLevel(logging.DEBUG)
     auth = AWSAuth(profile_name='default')
-    s3 = S3Storage(auth, bucket_name='your-bucket-name')
+    s3 = S3Storage(auth, bucket_name='bdaa-workload-docker')
+
+    s3.transfer_config = None
 
     file_list = s3.list_files(filter_extension='csv', filter_filename='iris')
 
