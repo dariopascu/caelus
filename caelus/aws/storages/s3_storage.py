@@ -159,9 +159,7 @@ class S3Storage(Storage):
     def write_json(self, data: dict, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.StringIO() as buff:
             json.dump(data, buff, **kwargs)
-            self.s3_resource.Object(self.bucket_name,
-                                    self._get_bucket_path(filename, folder)).upload_fileobj(buff,
-                                                                                            Config=self.transfer_config)
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
         if isinstance(write_object, bytes):
