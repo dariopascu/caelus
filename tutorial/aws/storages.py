@@ -8,9 +8,12 @@ if __name__ == '__main__':
     aws_logger = logging.getLogger('aws')
     aws_logger.setLevel(logging.DEBUG)
     auth = AWSAuth(profile_name='default')
-    s3 = S3Storage(auth, bucket_name='bdaa-workload-docker')
+    s3 = S3Storage(auth, bucket_name='your-bucket-name')
 
-    s3.transfer_config = None
+    s3.transfer_config = TransferConfig(multipart_threshold=8388608, max_concurrency=10,
+                                        multipart_chunksize=8388608,
+                                        num_download_attempts=5, max_io_queue=100, io_chunksize=262144,
+                                        use_threads=True)
 
     file_list = s3.list_files(filter_extension='csv', filter_filename='iris')
 
