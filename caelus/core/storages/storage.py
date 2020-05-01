@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union, Generator
 import pandas as pd
+import yaml
 
 
 class Storage(ABC):
@@ -11,6 +12,10 @@ class Storage(ABC):
     @property
     def base_path(self) -> str:
         return self._base_path
+
+    @base_path.setter
+    def base_path(self, new_path):
+        self._base_path = new_path
 
     def _get_folder_path(self, folder: Union[None, str] = None) -> str:
         full_path = self.base_path
@@ -34,6 +39,7 @@ class Storage(ABC):
                    filter_extension: Union[None, str, tuple] = None) -> Generator:
         pass
 
+    @abstractmethod
     def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
                               remove_copied: bool = False):
         pass
@@ -55,7 +61,7 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def read_yaml(self, filename: str, folder: Union[str, None] = None, **kwargs):
+    def read_yaml(self, filename: str, folder: Union[str, None] = None, yaml_loader=yaml.FullLoader):
         pass
 
     @abstractmethod
@@ -92,4 +98,8 @@ class Storage(ABC):
 
     @abstractmethod
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
+        pass
+
+    @abstractmethod
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
         pass

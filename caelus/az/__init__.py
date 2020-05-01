@@ -1,4 +1,9 @@
 import logging
 
-aws_logger = logging.getLogger('az')
-aws_logger.setLevel(logging.INFO)
+__aws_logger = logging.getLogger('az')
+__aws_logger.setLevel(logging.INFO)
+
+__all__ = [
+    'auth',
+    'storages',
+]

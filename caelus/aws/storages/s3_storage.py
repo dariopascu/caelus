@@ -6,6 +6,8 @@ from contextlib import contextmanager
 import pandas as pd
 import yaml
 
+from boto3.s3.transfer import TransferConfig
+
 from caelus.aws.auth import AWSAuth
 from caelus.core.storages import Storage
 
@@ -21,6 +23,16 @@ class S3Storage(Storage):
         self.s3_client = auth.session.client('s3')
         self.s3_resource = auth.session.resource('s3')
         self.bucket = self.s3_resource.Bucket(bucket_name)
+
+        self._transfer_config = None
+
+    @property
+    def transfer_config(self) -> TransferConfig:
+        return self._transfer_config
+
+    @transfer_config.setter
+    def transfer_config(self, new_transfer_config):
+        self._transfer_config = new_transfer_config
 
     ################
     # OBJECT ADMIN #
@@ -103,9 +115,9 @@ class S3Storage(Storage):
         with self._download_to_buffer(self._get_full_path(filename, folder)) as buff:
             return pd.read_parquet(buff, **kwargs)
 
-    def read_yaml(self, filename: str, folder=None, **kwargs):
+    def read_yaml(self, filename: str, folder=None, yaml_loader=yaml.FullLoader):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
-            return yaml.load(buff, **kwargs)
+            return yaml.load(buff, Loader=yaml_loader)
 
     def read_json(self, filename: str, folder=None, **kwargs):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
@@ -150,5 +162,15 @@ class S3Storage(Storage):
             self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
-        self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=write_object,
-                                                                                               **kwargs)
+        if isinstance(write_object, bytes):
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(
+                Body=write_object)
+        else:
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(
+                write_object, Config=self.transfer_config, **kwargs)
+
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
+        self.s3_resource.Object(self.bucket_name,
+                                self._get_bucket_path(filename, folder)).upload_file(object_filename,
+                                                                                     Config=self.transfer_config,
+                                                                                     **kwargs)

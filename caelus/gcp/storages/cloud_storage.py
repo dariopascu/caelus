@@ -116,9 +116,9 @@ class CloudStorage(Storage):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
             return pd.read_parquet(buff, **kwargs)
 
-    def read_yaml(self, filename: str, folder: Union[str, None] = None, **kwargs):
+    def read_yaml(self, filename: str, folder: Union[str, None] = None, yaml_loader=yaml.FullLoader):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
-            return yaml.load(buff, **kwargs)
+            return yaml.load(buff, Loader=yaml_loader)
 
     def read_json(self, filename: str, folder: Union[str, None] = None, **kwargs):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
@@ -169,3 +169,6 @@ class CloudStorage(Storage):
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
         self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(write_object, **kwargs)
+
+    def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
+        self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(object_filename, **kwargs)
