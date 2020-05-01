@@ -103,9 +103,9 @@ class BlobStorage(Storage):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
             return pd.read_parquet(buff, **kwargs)
 
-    def read_yaml(self, filename: str, folder=None, **kwargs):
+    def read_yaml(self, filename: str, folder=None, yaml_loader=yaml.FullLoader):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
-            return yaml.load(buff, **kwargs)
+            return yaml.load(buff, Loader=yaml_loader)
 
     def read_json(self, filename: str, folder=None, **kwargs):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:

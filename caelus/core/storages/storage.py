@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Union, Generator
 import pandas as pd
+import yaml
 
 
 class Storage(ABC):
@@ -60,7 +61,7 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def read_yaml(self, filename: str, folder: Union[str, None] = None, **kwargs):
+    def read_yaml(self, filename: str, folder: Union[str, None] = None, yaml_loader=yaml.FullLoader):
         pass
 
     @abstractmethod
