@@ -127,22 +127,22 @@ class S3Storage(Storage):
     def write_csv(self, df: pd.DataFrame, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.StringIO() as buff:
             df.to_csv(buff, **kwargs)
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(buff)
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
 
     def write_excel(self, df: pd.DataFrame, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.BytesIO() as buff:
             df.to_excel(buff, **kwargs)
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(buff)
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
 
     def write_parquet(self, df: pd.DataFrame, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.BytesIO() as buff:
             df.to_parquet(buff, **kwargs)
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(buff)
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
 
     def write_yaml(self, data: dict, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.StringIO() as buff:
             yaml.dump(data, buff, **kwargs)
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(buff)
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(Body=buff.getvalue())
 
     def write_json(self, data: dict, filename: str, folder: Union[str, None] = None, **kwargs):
         with io.StringIO() as buff:
@@ -150,13 +150,8 @@ class S3Storage(Storage):
             self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(buff)
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
-        if isinstance(write_object, bytes):
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(
-                Body=write_object)
-        else:
-            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(
-                write_object,
-                **kwargs)
+        self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(write_object,
+                                                                                                          **kwargs)
 
     def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
         self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_file(object_filename,
