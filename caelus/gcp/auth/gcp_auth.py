@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 class GCPAuth(object):
     _gcp_logger = logging.getLogger('gcp')
 
-    def __init__(self, project_id: str, credentials_file: str = None, account_info: str = None):
+    def __init__(self, project_id: str = None, credentials_file: str = None, account_info: str = None):
         self._project_id = project_id
 
         if credentials_file is not None:
