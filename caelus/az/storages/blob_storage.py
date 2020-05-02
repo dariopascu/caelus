@@ -16,6 +16,8 @@ from azure.storage.blob.models import Blob
 
 class BlobStorage(Storage):
 
+    _az_logger = logging.getLogger('az')
+
     def __init__(self, auth: AzureAuth, account_name: str, container_name: str,
                  base_path: str = ""):
         Storage.__init__(self, base_path=base_path)
@@ -54,11 +56,11 @@ class BlobStorage(Storage):
     def _blob_copy(self, dest_container_name: str, blob_name: str, remove_copied: bool):
         blob_url = self.blob_service.make_blob_url(self.container_name, blob_name)
         self.blob_service.copy_blob(dest_container_name, blob_name, blob_url)
-        logging.debug(f'{blob_name} copied from {self.container_name} to {dest_container_name}')
+        self._az_logger.debug(f'{blob_name} copied from {self.container_name} to {dest_container_name}')
 
         if remove_copied:
             self.blob_service.delete_blob(self.container_name, blob_name)
-            logging.debug(f'{blob_name} removed from {self.container_name}')
+            self._az_logger.debug(f'{blob_name} removed from {self.container_name}')
 
     def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
                               remove_copied: bool = False):
@@ -77,7 +79,7 @@ class BlobStorage(Storage):
     ###########
     @contextmanager
     def _read_to_buffer(self, path):
-        logging.debug(f'Reading from {self.container_name}: {path}')
+        self._az_logger.debug(f'Reading from {self.container_name}: {path}')
 
         with io.BytesIO() as buff:
             buff = self.blob_service.get_blob_to_bytes(container_name=self.container_name, blob_name=path).content
@@ -85,7 +87,7 @@ class BlobStorage(Storage):
 
     @contextmanager
     def _read_to_str_buffer(self, path):
-        logging.debug(f'Reading from {self.container_name}: {path}')
+        self._az_logger.debug(f'Reading from {self.container_name}: {path}')
 
         with io.StringIO() as buff:
             buff = self.blob_service.get_blob_to_text(container_name=self.container_name, blob_name=path).content
@@ -120,7 +122,7 @@ class BlobStorage(Storage):
     ###########
     def _get_bucket_path(self, filename: str, folder: Union[str, None] = None):
         bucket_path = self._get_full_path(filename, folder)
-        logging.debug(f'Writing in: {bucket_path}')
+        self._az_logger.debug(f'Writing in: {bucket_path}')
 
         return bucket_path
 
