@@ -15,7 +15,7 @@ if __name__ == '__main__':
                                         num_download_attempts=5, max_io_queue=100, io_chunksize=262144,
                                         use_threads=True)
 
-    file_list = s3.list_files(filter_extension='csv', filter_filename='iris')
+    file_list = s3.list_files(filter_extension='csv', filter_filename='demo')
 
     for file in file_list:
         print(file)
