@@ -6,8 +6,9 @@ if __name__ == '__main__':
     az_logger = logging.getLogger('az')
     az_logger.setLevel(logging.DEBUG)
 
-    auth = AzureAuth()
-    blob = BlobStorage()
+    auth = AzureAuth(
+        access_key='your-access-key')
+    blob = BlobStorage(auth, account_name='caelus', container_name='caelus-storage-test')
 
     file_list = blob.list_files(filter_extension='csv', filter_filename='demo')
 
