@@ -132,3 +132,6 @@ dmypy.json
 #pycharm
 .idea
 .ipynb_checkpoints/
+
+#tutorial
+tutorial/google-cloud/*.json

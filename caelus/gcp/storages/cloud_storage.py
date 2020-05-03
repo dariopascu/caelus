@@ -2,6 +2,7 @@ import io
 import json
 import logging
 from contextlib import contextmanager
+from tempfile import TemporaryFile
 from typing import Union, Generator
 
 import yaml
@@ -168,7 +169,12 @@ class CloudStorage(Storage):
             self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(buff)
 
     def write_object(self, write_object, filename: str, folder: Union[str, None] = None, **kwargs):
-        self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(write_object, **kwargs)
+        if isinstance(write_object, bytes):
+            self.bucket.blob(self._get_bucket_path(filename,
+                                                   folder)).upload_from_string(write_object,
+                                                                               content_type='application/octet-stream')
+        else:
+            self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(write_object, **kwargs)
 
     def write_object_from_file(self, object_filename: str, filename: str, folder: Union[str, None] = None, **kwargs):
-        self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(object_filename, **kwargs)
+        self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_filename(object_filename, **kwargs)
