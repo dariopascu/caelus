@@ -1,14 +1,19 @@
+import click
 from boto3.s3.transfer import TransferConfig
 
 from caelus.aws.auth import AWSAuth
 from caelus.aws.storages import S3Storage
 import logging
 
-if __name__ == '__main__':
+
+@click.command()
+@click.option('-pn', '--profile_name', type=str, help='AWS configured profile name')
+@click.option('-bn', '--bucket_name', type=str, help='AWS S3 bucket name')
+def s3_storage_test(profile_name, bucket_name):
     aws_logger = logging.getLogger('aws')
     aws_logger.setLevel(logging.DEBUG)
-    auth = AWSAuth(profile_name='default')
-    s3 = S3Storage(auth, bucket_name='your-bucket-name')
+    auth = AWSAuth(profile_name=profile_name)
+    s3 = S3Storage(auth, bucket_name=bucket_name)
 
     s3.transfer_config = TransferConfig(multipart_threshold=8388608, max_concurrency=10,
                                         multipart_chunksize=8388608,
@@ -46,3 +51,7 @@ if __name__ == '__main__':
         s3.write_object(image, 'demo_load_write.jpeg', folder='caelus')
 
     s3.write_object_from_file('../image.jpeg', 'demo_from_file.jpeg', folder='caelus')
+
+
+if __name__ == '__main__':
+    s3_storage_test.main(standalone_mode=False)

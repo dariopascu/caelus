@@ -1,13 +1,19 @@
+import click
+
 from caelus.gcp.auth import GCPAuth
 from caelus.gcp.storages import CloudStorage
 import logging
 
-if __name__ == '__main__':
+
+@click.command()
+@click.option('-cf', '--credentials_file', type=str, help='GCP Credentials Json')
+@click.option('-bn', '--bucket_name', type=str, help='GCP Cloud Storage bucket name')
+def cloud_storage_test(credentials_file, bucket_name):
     gcp_logger = logging.getLogger('gcp')
     gcp_logger.setLevel(logging.DEBUG)
 
-    auth = GCPAuth(credentials_file='gcp-credentials.json')
-    cloud_storage = CloudStorage(auth, bucket_name='caelus-storage-test')
+    auth = GCPAuth(credentials_file=credentials_file)
+    cloud_storage = CloudStorage(auth, bucket_name=bucket_name)
 
     file_list = cloud_storage.list_files(filter_extension='csv', filter_filename='demo')
 
@@ -40,3 +46,7 @@ if __name__ == '__main__':
         cloud_storage.write_object(image, 'demo_load_write.jpeg', folder='caelus')
 
     cloud_storage.write_object_from_file('../image.jpeg', 'demo_from_file.jpeg', folder='caelus')
+
+
+if __name__ == '__main__':
+    cloud_storage_test.main(standalone_mode=False)

@@ -1,14 +1,21 @@
+import click
+
 from caelus.az.auth import AzureAuth
 from caelus.az.storages import BlobStorage
 import logging
 
-if __name__ == '__main__':
+
+@click.command()
+@click.option('-ak', '--access_key', type=str, help='Azure access key')
+@click.option('-an', '--account_name', type=str, help='Blob account name')
+@click.option('-cn', '--container_name', type=str, help='Azure access key')
+def azure_storage_test(access_key, account_name, container_name):
     az_logger = logging.getLogger('az')
     az_logger.setLevel(logging.DEBUG)
 
     auth = AzureAuth(
-        access_key='your-access-key')
-    blob = BlobStorage(auth, account_name='caelus', container_name='caelus-storage-test')
+        access_key=access_key)
+    blob = BlobStorage(auth, account_name=account_name, container_name=container_name)
 
     file_list = blob.list_files(filter_extension='csv', filter_filename='demo')
 
@@ -41,3 +48,7 @@ if __name__ == '__main__':
         blob.write_object(image, 'demo_load_write.jpeg', folder='caelus')
 
     blob.write_object_from_file('../image.jpeg', 'demo_from_file.jpeg', folder='caelus')
+
+
+if __name__ == '__main__':
+    azure_storage_test.main(standalone_mode=False)
