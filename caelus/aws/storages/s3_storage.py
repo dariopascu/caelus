@@ -131,6 +131,7 @@ class S3Storage(Storage):
                             folder: Union[str, None] = None, **kwargs):
         object_filename_full, filename = self._create_local_path(object_filename, filename, folder)
         with open(filename, 'wb') as f:
+            self._aws_logger.debug(f'Downloading {object_filename_full} to {filename}')
             self.s3_client.download_fileobj(self.bucket_name, object_filename_full, f, **kwargs)
 
     ###########
