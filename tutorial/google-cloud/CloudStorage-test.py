@@ -18,7 +18,8 @@ def cloud_storage_test(credentials_file, bucket_name):
     file_list = cloud_storage.list_files(filter_extension='csv', filter_filename='demo')
 
     for file in file_list:
-        print(file)
+        print(file.name)
+        cloud_storage.read_object_to_file(file)
 
     ###########
     # READERS #

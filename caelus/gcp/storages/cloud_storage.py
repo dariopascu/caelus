@@ -129,6 +129,14 @@ class CloudStorage(Storage):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
             return buff.read(**kwargs)
 
+    def read_object_to_file(self, blob_object: Blob, filename: Union[str, None] = None,
+                            folder: Union[str, None] = None, **kwargs):
+        object_filename_full, filename = self._create_local_path(blob_object.name, filename, folder)
+
+        self._gcp_logger.debug(f'Downloading {object_filename_full} to {filename}')
+        blob = self.bucket.blob(object_filename_full)
+        blob.download_to_filename(filename)
+
     ###########
     # WRITERS #
     ###########
