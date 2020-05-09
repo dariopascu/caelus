@@ -38,7 +38,7 @@ class Storage(ABC):
             filename = object_filename_full
         local_path = Path(filename)
         local_path.parent.mkdir(exist_ok=True)
-        filename = "".join(i for i in filename if i not in "\/:*?<>|")
+        filename = "".join(i for i in filename if i not in "\:*?<>|")
         return object_filename_full, filename
 
     ################
