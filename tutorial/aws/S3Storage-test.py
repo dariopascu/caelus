@@ -24,6 +24,7 @@ def s3_storage_test(profile_name, bucket_name):
 
     for file in file_list:
         print(file)
+        s3.read_object_to_file(file)
 
     ###########
     # READERS #

@@ -127,6 +127,12 @@ class S3Storage(Storage):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
             return buff.read(**kwargs)
 
+    def read_object_to_file(self, object_filename: str, filename: Union[str, None] = None,
+                            folder: Union[str, None] = None, **kwargs):
+        object_filename_full, filename = self._create_local_path(object_filename, filename, folder)
+        with open(filename, 'wb') as f:
+            self.s3_client.download_fileobj(self.bucket_name, object_filename_full, f, **kwargs)
+
     ###########
     # WRITERS #
     ###########
