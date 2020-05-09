@@ -19,8 +19,9 @@ def azure_storage_test(access_key, account_name, container_name):
 
     file_list = blob.list_files(filter_extension='csv', filter_filename='demo')
 
-    for file in file_list:
-        print(file)
+    for blob_file in file_list:
+        print(blob_file.name)
+        blob.read_object_to_file(blob_file)
 
     ###########
     # READERS #
