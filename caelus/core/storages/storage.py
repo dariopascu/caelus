@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from pathlib import Path
 from typing import Union, Generator
 import pandas as pd
 import yaml
@@ -29,6 +30,16 @@ class Storage(ABC):
             return self._get_folder_path(folder=folder) + filename
         else:
             return self._get_folder_path(folder=folder) + '/' + filename
+
+    def _create_local_path(self, object_filename: str, filename: Union[str, None] = None,
+                           folder: Union[str, None] = None):
+        object_filename_full = self._get_full_path(object_filename, folder)
+        if filename is None:
+            filename = object_filename_full
+        local_path = Path(filename)
+        local_path.parent.mkdir(exist_ok=True)
+        filename = "".join(i for i in filename if i not in "\/:*?<>|")
+        return object_filename_full, filename
 
     ################
     # OBJECT ADMIN #
@@ -70,6 +81,11 @@ class Storage(ABC):
 
     @abstractmethod
     def read_object(self, filename: str, folder: Union[str, None] = None, **kwargs):
+        pass
+
+    @abstractmethod
+    def read_object_to_file(self, object_filename: str, filename: Union[str, None] = None,
+                            folder: Union[str, None] = None, **kwargs):
         pass
 
     ###########
