@@ -47,31 +47,37 @@ class BlobStorage(Storage):
         else:
             return key
 
-    def list_files(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
-                   filter_extension: Union[None, str, tuple] = None) -> Generator:
+    def list_objects(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
+                     filter_extension: Union[None, str, tuple] = None) -> Generator:
         return self._list_blob_objects(self._get_folder_path(folder), filter_filename=filter_filename,
                                        filter_extension=filter_extension)
 
-    def _blob_copy(self, dest_container_name: str, blob_name: str, remove_copied: bool):
+    def _blob_copy(self, dest_container_name: str, blob_name: str, dest_object_name: Union[str, None],
+                   remove_copied: bool):
+        if dest_object_name is None and dest_container_name == self.container_name:
+            self._az_logger.warning(f'This config does not move the object')
+        else:
+            if dest_object_name is None and dest_container_name != self.container_name:
+                dest_object_name = blob_name
         blob_url = self.blob_service.make_blob_url(self.container_name, blob_name)
-        self.blob_service.copy_blob(dest_container_name, blob_name, blob_url)
+        self.blob_service.copy_blob(dest_container_name, dest_object_name, blob_url)
         self._az_logger.debug(f'{blob_name} copied from {self.container_name} to {dest_container_name}')
 
         if remove_copied:
             self.blob_service.delete_blob(self.container_name, blob_name)
             self._az_logger.debug(f'{blob_name} removed from {self.container_name}')
 
-    def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
-                              remove_copied: bool = False):
+    def move_object(self, dest_storage_name: str, files_to_move: Union[str, list, Generator],
+                    dest_object_name: Union[str, None] = None, remove_copied: bool = False):
         if isinstance(files_to_move, str):
-            self._blob_copy(dest_name, files_to_move, remove_copied)
+            self._blob_copy(dest_storage_name, files_to_move, dest_object_name, remove_copied)
 
         else:
             for blob in files_to_move:
                 if isinstance(blob, Blob):
-                    self._blob_copy(dest_name, blob.name, remove_copied)
+                    self._blob_copy(dest_storage_name, blob.name, dest_object_name, remove_copied)
                 elif isinstance(blob, str):
-                    self._blob_copy(dest_name, blob, remove_copied)
+                    self._blob_copy(dest_storage_name, blob, dest_object_name, remove_copied)
 
     ###########
     # READERS #
@@ -115,6 +121,15 @@ class BlobStorage(Storage):
     def read_object(self, filename: str, folder: Union[str, None] = None, **kwargs):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
             return buff.read(**kwargs)
+
+    def read_object_to_file(self, blob_object: Blob, filename: Union[str, None] = None,
+                            folder: Union[str, None] = None, **kwargs):
+        object_filename_full, filename = self._create_local_path(blob_object.name, filename, folder)
+
+        with open(filename, 'wb') as f:
+            self._az_logger.debug(f'Downloading {object_filename_full} to {filename}')
+            retrieved_blob = self.blob_service.get_blob_to_bytes(self.container_name, object_filename_full)
+            f.write(retrieved_blob.content)
 
     ###########
     # WRITERS #
@@ -165,6 +180,10 @@ class BlobStorage(Storage):
             self.blob_service.create_blob_from_bytes(container_name=self.container_name,
                                                      blob_name=self._get_bucket_path(filename, folder),
                                                      blob=write_object)
+        elif isinstance(write_object, io.BytesIO):
+            self.blob_service.create_blob_from_bytes(container_name=self.container_name,
+                                                     blob_name=self._get_bucket_path(filename, folder),
+                                                     blob=write_object.getvalue())
         else:
             self.blob_service.create_blob_from_stream(container_name=self.container_name,
                                                       blob_name=self._get_bucket_path(filename, folder),

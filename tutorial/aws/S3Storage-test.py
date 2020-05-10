@@ -20,10 +20,11 @@ def s3_storage_test(profile_name, bucket_name):
                                         num_download_attempts=5, max_io_queue=100, io_chunksize=262144,
                                         use_threads=True)
 
-    file_list = s3.list_files(filter_extension='csv', filter_filename='demo')
+    file_list = s3.list_objects(filter_extension='csv', filter_filename='demo')
 
     for file in file_list:
         print(file)
+        s3.read_object_to_file(file)
 
     ###########
     # READERS #
@@ -35,6 +36,12 @@ def s3_storage_test(profile_name, bucket_name):
     parquet = s3.read_parquet('demo.parquet', folder='parquet')
 
     s3_object = s3.read_object('demo.jpeg')
+
+    # Move example
+    s3.move_object(s3.bucket_name, 'demo.json', 'move/demo.json', remove_copied=False)
+    moved_objects = s3.list_objects(folder='move')
+    for moved_object in moved_objects:
+        print(moved_object)
 
     ###########
     # WRITERS #
