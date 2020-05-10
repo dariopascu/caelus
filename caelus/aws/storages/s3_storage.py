@@ -34,6 +34,22 @@ class S3Storage(Storage):
     def transfer_config(self, new_transfer_config):
         self._transfer_config = new_transfer_config
 
+    @staticmethod
+    def create_bucket(auth: AWSAuth, bucket_name, **kwargs):
+        _aws_logger = logging.getLogger('aws')
+        s3_client = auth.session.client('s3')
+        try:
+
+            location = {'LocationConstraint': auth.region_name} if not auth.region_name else None
+            s3_client.create_bucket(Bucket=bucket_name,
+                                    CreateBucketConfiguration=location, **kwargs)
+            _aws_logger.debug(
+                f'Bucket {bucket_name} created {"in" + auth.region_name if not auth.region_name else ""}')
+        except s3_client.exceptions.BucketAlreadyExists:
+            _aws_logger.error(f'Bucket {bucket_name} already exists')
+        except s3_client.exceptions.BucketAlreadyOwnedByYou:
+            _aws_logger.error(f'Bucket {bucket_name} is already yours')
+
     ################
     # OBJECT ADMIN #
     ################
