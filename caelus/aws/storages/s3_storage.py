@@ -7,6 +7,7 @@ import pandas as pd
 import yaml
 
 from boto3.s3.transfer import TransferConfig
+from botocore.exceptions import ClientError
 
 from caelus.aws.auth import AWSAuth
 from caelus.core.storages import Storage
@@ -62,26 +63,34 @@ class S3Storage(Storage):
         else:
             return key
 
-    def list_files(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
-                   only_files: bool = True, filter_extension: Union[None, str, tuple] = None) -> Generator:
+    def list_objects(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
+                     only_files: bool = True, filter_extension: Union[None, str, tuple] = None) -> Generator:
         return self._list_s3_objects(self._get_folder_path(folder), filter_filename=filter_filename,
                                      only_files=only_files, filter_extension=filter_extension)
 
-    def _object_copy(self, dest_bucket_name: str, object_name: str, remove_copied: bool):
-        self.s3_resource.Object(dest_bucket_name, object_name).copy_from(CopySource={'Bucket': self.bucket_name,
-                                                                                     'Key': object_name})
-        self._aws_logger.debug(f'{object_name} copied from {self.bucket_name} to {dest_bucket_name}')
-        if remove_copied:
-            self.s3_resource.Object(self.bucket_name, object_name).delete()
-            self._aws_logger.debug(f'{object_name} removed from {self.bucket_name}')
+    def _object_copy(self, dest_bucket_name: str, object_name: str, dest_object_name: Union[str, None],
+                     remove_copied: bool):
+        if dest_object_name is None and dest_bucket_name == self.bucket_name:
+            self._aws_logger.warning(f'This config does not move the object')
+        else:
+            if dest_object_name is None and dest_bucket_name != self.bucket_name:
+                dest_object_name = object_name
 
-    def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
-                              remove_copied: bool = False):
+            self.s3_resource.Object(dest_bucket_name, dest_object_name).copy_from(
+                CopySource={'Bucket': self.bucket_name,
+                            'Key': object_name})
+            self._aws_logger.debug(f'{object_name} copied from {self.bucket_name} to {dest_bucket_name}')
+            if remove_copied:
+                self.s3_resource.Object(self.bucket_name, object_name).delete()
+                self._aws_logger.debug(f'{object_name} removed from {self.bucket_name}')
+
+    def move_object(self, dest_storage_name: str, files_to_move: Union[str, list, Generator],
+                    dest_object_name: Union[str, None] = None, remove_copied: bool = False):
         if isinstance(files_to_move, str):
-            self._object_copy(dest_name, files_to_move, remove_copied)
+            self._object_copy(dest_storage_name, files_to_move, dest_object_name, remove_copied)
         else:
             for bucket_object in files_to_move:
-                self._object_copy(dest_name, bucket_object, remove_copied)
+                self._object_copy(dest_storage_name, bucket_object, dest_object_name, remove_copied)
 
     ###########
     # READERS #
@@ -127,6 +136,14 @@ class S3Storage(Storage):
         with self._read_to_buffer(self._get_full_path(filename, folder)) as buff:
             return buff.read(**kwargs)
 
+    def read_object_to_file(self, object_filename: str, filename: Union[str, None] = None,
+                            folder: Union[str, None] = None, **kwargs):
+        object_filename_full, filename = self._create_local_path(object_filename, filename, folder)
+        with open(filename, 'wb') as f:
+            self._aws_logger.debug(f'Downloading {object_filename_full} to {filename}')
+            self.s3_client.download_fileobj(self.bucket_name, object_filename_full, f, Config=self.transfer_config,
+                                            **kwargs)
+
     ###########
     # WRITERS #
     ###########
@@ -165,6 +182,9 @@ class S3Storage(Storage):
         if isinstance(write_object, bytes):
             self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(
                 Body=write_object)
+        elif isinstance(write_object, io.BytesIO):
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(
+                Body=write_object.getvalue())
         else:
             self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(
                 write_object, Config=self.transfer_config, **kwargs)

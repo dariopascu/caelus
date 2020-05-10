@@ -17,10 +17,11 @@ def azure_storage_test(access_key, account_name, container_name):
         access_key=access_key)
     blob = BlobStorage(auth, account_name=account_name, container_name=container_name)
 
-    file_list = blob.list_files(filter_extension='csv', filter_filename='demo')
+    file_list = blob.list_objects(filter_extension='csv', filter_filename='demo')
 
-    for file in file_list:
-        print(file)
+    for blob_file in file_list:
+        print(blob_file.name)
+        blob.read_object_to_file(blob_file)
 
     ###########
     # READERS #
@@ -32,6 +33,12 @@ def azure_storage_test(access_key, account_name, container_name):
     parquet = blob.read_parquet('demo.parquet', folder='parquet')
 
     blob_object = blob.read_object('demo.jpeg')
+
+    # Move example
+    blob.move_object(blob.container_name, 'demo.json', 'move/demo.json', remove_copied=False)
+    moved_objects = blob.list_objects(folder='move')
+    for moved_object in moved_objects:
+        print(moved_object.name)
 
     ###########
     # WRITERS #

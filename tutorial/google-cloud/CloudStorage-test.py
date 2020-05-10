@@ -15,10 +15,11 @@ def cloud_storage_test(credentials_file, bucket_name):
     auth = GCPAuth(credentials_file=credentials_file)
     cloud_storage = CloudStorage(auth, bucket_name=bucket_name)
 
-    file_list = cloud_storage.list_files(filter_extension='csv', filter_filename='demo')
+    file_list = cloud_storage.list_objects(filter_extension='csv', filter_filename='demo')
 
     for file in file_list:
-        print(file)
+        print(file.name)
+        cloud_storage.read_object_to_file(file)
 
     ###########
     # READERS #
@@ -30,6 +31,12 @@ def cloud_storage_test(credentials_file, bucket_name):
     parquet = cloud_storage.read_parquet('demo.parquet', folder='parquet')
 
     cloud_storage_object = cloud_storage.read_object('demo.jpeg')
+
+    # Move example
+    cloud_storage.move_object(cloud_storage.bucket_name, 'demo.json', 'move/demo.json', remove_copied=False)
+    moved_objects = cloud_storage.list_objects(folder='move')
+    for moved_object in moved_objects:
+        print(moved_object.name)
 
     ###########
     # WRITERS #
