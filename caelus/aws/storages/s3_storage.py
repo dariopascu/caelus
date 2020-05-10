@@ -62,8 +62,8 @@ class S3Storage(Storage):
         else:
             return key
 
-    def list_files(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
-                   only_files: bool = True, filter_extension: Union[None, str, tuple] = None) -> Generator:
+    def list_objects(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
+                     only_files: bool = True, filter_extension: Union[None, str, tuple] = None) -> Generator:
         return self._list_s3_objects(self._get_folder_path(folder), filter_filename=filter_filename,
                                      only_files=only_files, filter_extension=filter_extension)
 

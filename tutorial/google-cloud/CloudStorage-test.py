@@ -15,7 +15,7 @@ def cloud_storage_test(credentials_file, bucket_name):
     auth = GCPAuth(credentials_file=credentials_file)
     cloud_storage = CloudStorage(auth, bucket_name=bucket_name)
 
-    file_list = cloud_storage.list_files(filter_extension='csv', filter_filename='demo')
+    file_list = cloud_storage.list_objects(filter_extension='csv', filter_filename='demo')
 
     for file in file_list:
         print(file.name)

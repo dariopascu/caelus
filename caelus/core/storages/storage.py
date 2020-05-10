@@ -46,8 +46,8 @@ class Storage(ABC):
     ################
 
     @abstractmethod
-    def list_files(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
-                   filter_extension: Union[None, str, tuple] = None) -> Generator:
+    def list_objects(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
+                     filter_extension: Union[None, str, tuple] = None) -> Generator:
         pass
 
     @abstractmethod

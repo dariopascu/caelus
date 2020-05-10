@@ -47,8 +47,8 @@ class BlobStorage(Storage):
         else:
             return key
 
-    def list_files(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
-                   filter_extension: Union[None, str, tuple] = None) -> Generator:
+    def list_objects(self, folder: Union[None, str] = None, filter_filename: Union[None, str] = None,
+                     filter_extension: Union[None, str, tuple] = None) -> Generator:
         return self._list_blob_objects(self._get_folder_path(folder), filter_filename=filter_filename,
                                        filter_extension=filter_extension)
 
