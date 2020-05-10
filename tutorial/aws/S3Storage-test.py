@@ -14,7 +14,6 @@ def s3_storage_test(profile_name, bucket_name):
     aws_logger.setLevel(logging.DEBUG)
     auth = AWSAuth(profile_name=profile_name)
     s3 = S3Storage(auth, bucket_name=bucket_name)
-    S3Storage.create_bucket(auth, 'test')
 
     s3.transfer_config = TransferConfig(multipart_threshold=8388608, max_concurrency=10,
                                         multipart_chunksize=8388608,
@@ -22,7 +21,6 @@ def s3_storage_test(profile_name, bucket_name):
                                         use_threads=True)
 
     file_list = s3.list_objects(filter_extension='csv', filter_filename='demo')
-
 
     for file in file_list:
         print(file)
