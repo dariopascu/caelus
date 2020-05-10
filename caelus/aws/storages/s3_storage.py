@@ -181,6 +181,9 @@ class S3Storage(Storage):
         if isinstance(write_object, bytes):
             self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(
                 Body=write_object)
+        elif isinstance(write_object, io.BytesIO):
+            self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).put(
+                Body=write_object.getvalue())
         else:
             self.s3_resource.Object(self.bucket_name, self._get_bucket_path(filename, folder)).upload_fileobj(
                 write_object, Config=self.transfer_config, **kwargs)

@@ -180,6 +180,10 @@ class BlobStorage(Storage):
             self.blob_service.create_blob_from_bytes(container_name=self.container_name,
                                                      blob_name=self._get_bucket_path(filename, folder),
                                                      blob=write_object)
+        elif isinstance(write_object, io.BytesIO):
+            self.blob_service.create_blob_from_bytes(container_name=self.container_name,
+                                                     blob_name=self._get_bucket_path(filename, folder),
+                                                     blob=write_object.getvalue())
         else:
             self.blob_service.create_blob_from_stream(container_name=self.container_name,
                                                       blob_name=self._get_bucket_path(filename, folder),

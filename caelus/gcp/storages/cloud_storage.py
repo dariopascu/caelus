@@ -189,6 +189,10 @@ class CloudStorage(Storage):
             self.bucket.blob(self._get_bucket_path(filename,
                                                    folder)).upload_from_string(write_object,
                                                                                content_type='application/octet-stream')
+        elif isinstance(write_object, io.BytesIO):
+            self.bucket.blob(self._get_bucket_path(
+                filename, folder)).upload_from_string(write_object.getvalue(),
+                                                      content_type='application/octet-stream')
         else:
             self.bucket.blob(self._get_bucket_path(filename, folder)).upload_from_file(write_object, **kwargs)
 
