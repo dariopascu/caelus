@@ -48,10 +48,10 @@ class S3Storage(Storage):
                 s3_client.create_bucket(Bucket=bucket_name,
                                         CreateBucketConfiguration=location, **kwargs)
             _aws_logger.debug(
-                f'Bucket {bucket_name} created {"in" + auth.region_name if not auth.region_name else ""}')
+                f'Bucket {bucket_name} created in {"us-east-1" if not auth.region_name else auth.region_name}')
         except ClientError:
             _aws_logger.error(
-                f'The unspecified location is incompatible for the region specific endpoint this request was sent to.')
+                f'Can´t create the bucket {bucket_name} in {"us-east-1" if not auth.region_name else auth.region_name}')
         except s3_client.exceptions.BucketAlreadyExists:
             _aws_logger.error(f'Bucket {bucket_name} already exists')
         except s3_client.exceptions.BucketAlreadyOwnedByYou:
