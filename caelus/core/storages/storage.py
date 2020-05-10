@@ -51,8 +51,8 @@ class Storage(ABC):
         pass
 
     @abstractmethod
-    def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
-                              remove_copied: bool = False):
+    def move_object(self, dest_storage_name: str, files_to_move: Union[str, list, Generator],
+                    dest_object_name: Union[str, None] = None, remove_copied: bool = False):
         pass
 
     ###########

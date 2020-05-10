@@ -34,6 +34,12 @@ def azure_storage_test(access_key, account_name, container_name):
 
     blob_object = blob.read_object('demo.jpeg')
 
+    # Move example
+    blob.move_object(blob.container_name, 'demo.json', 'move/demo.json', remove_copied=False)
+    moved_objects = blob.list_objects(folder='move')
+    for moved_object in moved_objects:
+        print(moved_object.name)
+
     ###########
     # WRITERS #
     ###########

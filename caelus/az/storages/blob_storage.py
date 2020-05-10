@@ -52,26 +52,32 @@ class BlobStorage(Storage):
         return self._list_blob_objects(self._get_folder_path(folder), filter_filename=filter_filename,
                                        filter_extension=filter_extension)
 
-    def _blob_copy(self, dest_container_name: str, blob_name: str, remove_copied: bool):
+    def _blob_copy(self, dest_container_name: str, blob_name: str, dest_object_name: Union[str, None],
+                   remove_copied: bool):
+        if dest_object_name is None and dest_container_name == self.container_name:
+            self._az_logger.warning(f'This config does not move the object')
+        else:
+            if dest_object_name is None and dest_container_name != self.container_name:
+                dest_object_name = blob_name
         blob_url = self.blob_service.make_blob_url(self.container_name, blob_name)
-        self.blob_service.copy_blob(dest_container_name, blob_name, blob_url)
+        self.blob_service.copy_blob(dest_container_name, dest_object_name, blob_url)
         self._az_logger.debug(f'{blob_name} copied from {self.container_name} to {dest_container_name}')
 
         if remove_copied:
             self.blob_service.delete_blob(self.container_name, blob_name)
             self._az_logger.debug(f'{blob_name} removed from {self.container_name}')
 
-    def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
-                              remove_copied: bool = False):
+    def move_object(self, dest_storage_name: str, files_to_move: Union[str, list, Generator],
+                    dest_object_name: Union[str, None] = None, remove_copied: bool = False):
         if isinstance(files_to_move, str):
-            self._blob_copy(dest_name, files_to_move, remove_copied)
+            self._blob_copy(dest_storage_name, files_to_move, dest_object_name, remove_copied)
 
         else:
             for blob in files_to_move:
                 if isinstance(blob, Blob):
-                    self._blob_copy(dest_name, blob.name, remove_copied)
+                    self._blob_copy(dest_storage_name, blob.name, dest_object_name, remove_copied)
                 elif isinstance(blob, str):
-                    self._blob_copy(dest_name, blob, remove_copied)
+                    self._blob_copy(dest_storage_name, blob, dest_object_name, remove_copied)
 
     ###########
     # READERS #

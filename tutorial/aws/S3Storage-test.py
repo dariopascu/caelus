@@ -37,6 +37,12 @@ def s3_storage_test(profile_name, bucket_name):
 
     s3_object = s3.read_object('demo.jpeg')
 
+    # Move example
+    s3.move_object(s3.bucket_name, 'demo.json', 'move/demo.json', remove_copied=False)
+    moved_objects = s3.list_objects(folder='move')
+    for moved_object in moved_objects:
+        print(moved_object)
+
     ###########
     # WRITERS #
     ###########

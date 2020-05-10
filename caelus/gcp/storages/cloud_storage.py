@@ -62,28 +62,36 @@ class CloudStorage(Storage):
         return self._list_bucket_objects(self._get_folder_path(folder), filter_filename=filter_filename,
                                          filter_extension=filter_extension)
 
-    def _blob_copy(self, dest_bucket_name: str, blob_name: str, remove_copied: bool):
+    def _blob_copy(self, dest_bucket_name: str, blob_name: str, dest_object_name: Union[str, None],
+                   remove_copied: bool):
+        if dest_object_name is None and dest_bucket_name == self.bucket_name:
+            self._gcp_logger.warning(f'This config does not move the object')
+        else:
+            if dest_object_name is None and dest_bucket_name != self.bucket_name:
+                dest_object_name = blob_name
 
         source_blob = self.bucket.blob(blob_name)
-        destination_bucket = self.storage_client.bucket(dest_bucket_name)
-        self.bucket.copy_blob(source_blob, destination_bucket, blob_name)
+        destination_bucket = self.storage_client.bucket(
+            dest_bucket_name) if dest_bucket_name != self.bucket_name else self.bucket
+
+        self.bucket.copy_blob(source_blob, destination_bucket, dest_object_name)
         self._gcp_logger.debug(f'{blob_name} copied from {self.bucket_name} to {dest_bucket_name}')
 
         if remove_copied:
             source_blob.delete()
             self._gcp_logger.debug(f'{blob_name} removed from {self.bucket_name}')
 
-    def copy_between_storages(self, dest_name: str, files_to_move: Union[str, list, Generator],
-                              remove_copied: bool = False):
+    def move_object(self, dest_storage_name: str, files_to_move: Union[str, list, Generator],
+                    dest_object_name: Union[str, None] = None, remove_copied: bool = False):
         if isinstance(files_to_move, str):
-            self._blob_copy(dest_name, files_to_move, remove_copied)
+            self._blob_copy(dest_storage_name, files_to_move, dest_object_name, remove_copied)
 
         else:
             for blob in files_to_move:
                 if isinstance(blob, Blob):
-                    self._blob_copy(dest_name, blob.name, remove_copied)
+                    self._blob_copy(dest_storage_name, blob.name, dest_object_name, remove_copied)
                 elif isinstance(blob, str):
-                    self._blob_copy(dest_name, blob, remove_copied)
+                    self._blob_copy(dest_storage_name, blob, dest_object_name, remove_copied)
 
     ###########
     # READERS #

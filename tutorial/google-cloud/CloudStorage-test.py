@@ -32,6 +32,12 @@ def cloud_storage_test(credentials_file, bucket_name):
 
     cloud_storage_object = cloud_storage.read_object('demo.jpeg')
 
+    # Move example
+    cloud_storage.move_object(cloud_storage.bucket_name, 'demo.json', 'move/demo.json', remove_copied=False)
+    moved_objects = cloud_storage.list_objects(folder='move')
+    for moved_object in moved_objects:
+        print(moved_object.name)
+
     ###########
     # WRITERS #
     ###########
