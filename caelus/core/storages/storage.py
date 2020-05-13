@@ -37,7 +37,7 @@ class Storage(ABC):
         if filename is None:
             filename = object_filename_full
         local_path = Path(filename)
-        local_path.parent.mkdir(exist_ok=True)
+        local_path.parent.mkdir(parents=True, exist_ok=True)
         filename = "".join(i for i in filename if i not in "\:*?<>|")
         return object_filename_full, filename
 
