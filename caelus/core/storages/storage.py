@@ -31,11 +31,14 @@ class Storage(ABC):
         else:
             return self._get_folder_path(folder=folder) + '/' + filename
 
-    def _create_local_path(self, object_filename: str, filename: Union[str, None] = None,
-                           folder: Union[str, None] = None):
-        object_filename_full = self._get_full_path(object_filename, folder)
-        if filename is None:
+    def _create_local_path(self, object_filename: str, object_folder: Union[str, None] = None,
+                           filename: Union[str, None] = None, folder: Union[str, None] = None):
+        object_filename_full = self._get_full_path(object_filename, object_folder)
+        if filename is None and folder is None:
             filename = object_filename_full
+        elif filename is None:
+            filename = self._get_full_path(object_filename_full.split('/')[-1], folder)
+
         local_path = Path(filename)
         local_path.parent.mkdir(parents=True, exist_ok=True)
         filename = "".join(i for i in filename if i not in "\:*?<>|")
